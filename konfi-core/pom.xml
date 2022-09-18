@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.nirro.konfi</groupId>
+		<artifactId>konfi-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>konfi-core</artifactId>
+	<name>Konfi core</name>
+
+	<description>Konfi core</description>
+	<properties>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+
+			<!-- generate test coverage report at /target/site/jacoco -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- generate plant uml at /target/generated-docs -->
+			<plugin>
+				<artifactId>plantuml-generator-maven-plugin</artifactId>
+				<groupId>de.elnarion.maven</groupId>
+				<executions>
+					<execution>
+						<id>generate-konfi-diagram</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<phase>generate-test-sources</phase>
+						<configuration>
+							<outputFilename>konfi.puml</outputFilename>
+							<maxVisibilityFields>PUBLIC</maxVisibilityFields>
+							<maxVisibilityMethods>PUBLIC</maxVisibilityMethods>
+							<whitelistRegexp>.*Konfi.*</whitelistRegexp>
+							<scanPackages>
+								<scanPackage>
+									com.nirro.konfi
+								</scanPackage>
+							</scanPackages>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-source-diagram</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<phase>generate-test-sources</phase>
+						<configuration>
+							<outputFilename>source.puml</outputFilename>
+							<maxVisibilityFields>PUBLIC</maxVisibilityFields>
+							<maxVisibilityMethods>PUBLIC</maxVisibilityMethods>
+							<scanPackages>
+								<scanPackage>
+									com.nirro.konfi.source
+								</scanPackage>
+							</scanPackages>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-repository-diagram</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<phase>generate-test-sources</phase>
+						<configuration>
+							<outputFilename>repository.puml</outputFilename>
+							<maxVisibilityFields>PUBLIC</maxVisibilityFields>
+							<maxVisibilityMethods>PUBLIC</maxVisibilityMethods>
+							<scanPackages>
+								<scanPackage>
+									com.nirro.konfi.repository
+								</scanPackage>
+							</scanPackages>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+
+
+	</build>
+
+
+
+</project>
