@@ -2,14 +2,10 @@ package com.nirro.konfi.converter;
 
 import com.nirro.konfi.exception.InvalidReturnTypeException;
 import com.nirro.konfi.exception.InvalidValueException;
-import com.nirro.konfi.exception.KonfiException;
 import com.nirro.konfi.exception.MissingValueException;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -140,6 +136,5 @@ public class PropertyConverterImpl implements PropertyConverter {
                 throw new InvalidValueException(e);
             }
         }
-
     }
 }

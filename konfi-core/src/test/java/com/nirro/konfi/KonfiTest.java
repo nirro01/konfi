@@ -254,6 +254,29 @@ class KonfiTest {
         Assertions.assertThrows(InvalidReturnTypeException.class, konfi::ListOfListOfString);
     }
 
+    @Test
+    void AdvancedUsageTest() {
+        var konfi = Konfi
+                .builder(StringProperties.class)
+                .repositories(singleMapSourceFixedRepository(
+                        Map.entry(VALUE, "a  "),
+                        Map.entry(OPTIONAL_VALUE, "a "),
+                        Map.entry(LIST_OF_VALUES, "  a b  "),
+                        Map.entry(OPTIONAL_LIST_OF_VALUES, "   a b "),
+                        Map.entry(SET_OF_VALUES, " a b    "),
+                        Map.entry(OPTIONAL_SET_OF_VALUES, " a b ")))
+                .collectionSeparator("\\s")
+                .preProcessors(List.of(String::strip, String::toUpperCase))
+                .build();
+
+        Assertions.assertEquals("A", konfi.value());
+        Assertions.assertEquals(Optional.of("A"), konfi.optionalValue());
+        Assertions.assertEquals(List.of("A", "B"), konfi.listOfValues());
+        Assertions.assertEquals(Optional.of(List.of("A", "B")), konfi.optionalListOfValues());
+        Assertions.assertEquals(Set.of("A", "B"), konfi.setOfValues());
+        Assertions.assertEquals(Optional.of(Set.of("A", "B")), konfi.optionalSetOfValues());
+    }
+
     @SafeVarargs
     final List<Repository> singleMapSourceFixedRepository(Map.Entry<String, String>... entries) {
         return List.of(mapSourceFixedRepository(entries));

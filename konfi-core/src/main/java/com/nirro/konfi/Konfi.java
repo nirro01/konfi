@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 public final class Konfi {
@@ -34,41 +35,47 @@ public final class Konfi {
     }
 
     public interface RepositoriesStep<T> {
-        BuildStep<T> repositories(List<Repository> repositories);
+        OptionsStep<T> repositories(List<Repository> repositories);
     }
 
-    public interface BuildStep<T> {
+    public interface OptionsStep<T> {
+        OptionsStep<T> collectionSeparator(String collectionSeparator);
+        OptionsStep<T> preProcessors(List<UnaryOperator<String>> preProcessors);
         T build();
     }
 
-    public static class Builder<T> implements RepositoriesStep<T>, BuildStep<T> {
+    public static class Builder<T> implements RepositoriesStep<T>, OptionsStep<T> {
         private final Class<T> target;
         private List<Repository> repositories;
         private String collectionSeparator = ",";
-        //TODO: strip/stripLeading/stripTrailing/trim
+        private List<UnaryOperator<String>> preProcessors = List.of();
 
         public Builder(Class<T> target) {
             this.target = target;
         }
 
         @Override
-        public BuildStep<T> repositories(List<Repository> repositories) {
+        public OptionsStep<T> repositories(List<Repository> repositories) {
             this.repositories = repositories;
             return this;
         }
 
-        /*
-        public Builder<T> collectionSeparator(String collectionSeparator) {
+        public OptionsStep<T> collectionSeparator(String collectionSeparator) {
             this.collectionSeparator = collectionSeparator;
             return this;
-        }*/
+        }
+
+        public OptionsStep<T> preProcessors(List<UnaryOperator<String>> preProcessors) {
+            this.preProcessors = preProcessors;
+            return this;
+        }
 
         @SuppressWarnings("unchecked")
         public T build() {
             var propertyConverter = new PropertyConverterImpl(collectionSeparator);
             var metadataMap = getMethodMetadataMap(target);
             repositories.parallelStream().forEach(Repository::refresh);
-            var handler = new KonfiHandler(propertyConverter, metadataMap, repositories);
+            var handler = new KonfiHandler(propertyConverter, metadataMap, repositories, preProcessors);
             return (T) Proxy.newProxyInstance(target.getClassLoader(), new Class<?>[] {target}, handler);
         }
 
