@@ -2,12 +2,12 @@ package com.nirro.konfi.invocationhandler;
 
 import com.nirro.konfi.converter.PropertyConverter;
 import com.nirro.konfi.exception.InvalidReturnTypeException;
-import com.nirro.konfi.exception.KonfiException;
 import com.nirro.konfi.repository.Repository;
 
 import java.lang.reflect.*;
 import java.util.List;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
 public class KonfiHandler implements InvocationHandler {
 
@@ -22,14 +22,16 @@ public class KonfiHandler implements InvocationHandler {
     private final Map<Method, MethodMetadata> methodMetadataMap;
     private final PropertyConverter propertyConverter;
     private final List<Repository> repositories;
-
+    private final UnaryOperator<String> preProcessor;
 
     public KonfiHandler(PropertyConverter propertyConverter,
                         Map<Method, MethodMetadata> methodMetadataMap,
-                        List<Repository> repositories) {
+                        List<Repository> repositories,
+                        List<UnaryOperator<String>> preProcessors) {
         this.propertyConverter = propertyConverter;
         this.methodMetadataMap = methodMetadataMap;
         this.repositories = repositories;
+        this.preProcessor = combinePreProcessors(preProcessors);
     }
 
     @Override
@@ -44,6 +46,9 @@ public class KonfiHandler implements InvocationHandler {
             default:
                 MethodMetadata methodMetadata = methodMetadataMap.get(method);
                 String value = getValue(methodMetadata.key());
+                if(value != null) {
+                    value = preProcessor.apply(value);
+                }
                 return invoke(value, methodMetadata.returnType());
         }
     }
@@ -79,7 +84,7 @@ public class KonfiHandler implements InvocationHandler {
             return propertyConverter.convert(value, type, false);
         } else {
             // Unsupported type
-            throw new KonfiException(); //TODO
+            throw new InvalidReturnTypeException();
         }
     }
 
@@ -93,14 +98,14 @@ public class KonfiHandler implements InvocationHandler {
                 } else if (nestedType instanceof Class<?>) {
                     return propertyConverter.convert(value, nestedType, true);
                 } else {
-                    throw new KonfiException(); //TODO
+                    throw new InvalidReturnTypeException();
                 }
             case JAVA_UTIL_LIST:
                 return propertyConverter.convertList(value, type.getActualTypeArguments()[0], false);
             case JAVA_UTIL_SET:
                 return propertyConverter.convertSet(value, type.getActualTypeArguments()[0], false);
             default:
-                throw new KonfiException(); //TODO
+                throw new InvalidReturnTypeException();
 
         }
     }
@@ -121,6 +126,13 @@ public class KonfiHandler implements InvocationHandler {
         } catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    private UnaryOperator<String> combinePreProcessors(List<UnaryOperator<String>> preprocessors) {
+        return preprocessors.stream().reduce(
+                identity -> identity,
+                (a, b) -> a.andThen(b)::apply
+        );
     }
 
    /*
