@@ -6,14 +6,13 @@ import com.nirro.konfi.exception.MissingValueException;
 import com.nirro.konfi.repository.Repositories;
 import com.nirro.konfi.repository.Repository;
 import com.nirro.konfi.samples.*;
+import com.nirro.konfi.source.EnvironmentVariablesSource;
 import com.nirro.konfi.source.Sources;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 class KonfiTest {
 
@@ -275,6 +274,44 @@ class KonfiTest {
         Assertions.assertEquals(Optional.of(List.of("A", "B")), konfi.optionalListOfValues());
         Assertions.assertEquals(Set.of("A", "B"), konfi.setOfValues());
         Assertions.assertEquals(Optional.of(Set.of("A", "B")), konfi.optionalSetOfValues());
+    }
+
+    @Test
+    void RefreshTest() {
+        var mockSource = Mockito.mock(EnvironmentVariablesSource.class);
+        var firstAnswer = new Properties();
+        firstAnswer.put(VALUE, "a");
+        var secondAnswer = new Properties();
+        secondAnswer.put(VALUE, "b");
+        var repository = Repositories.newRepository((mockSource));
+        Mockito.when(mockSource.get()).thenReturn(firstAnswer, secondAnswer);
+        var konfi = Konfi
+                .builder(StringProperties.class)
+                .repositories(List.of(repository))
+                .build();
+
+        Assertions.assertEquals("a", konfi.value());
+        repository.refresh();
+        Assertions.assertEquals("b", konfi.value());
+    }
+
+    @Test
+    void RefreshAllTest() {
+        var mockSource = Mockito.mock(EnvironmentVariablesSource.class);
+        var firstAnswer = new Properties();
+        firstAnswer.put(VALUE, "a");
+        var secondAnswer = new Properties();
+        secondAnswer.put(VALUE, "b");
+        var repository = Repositories.newRepository((mockSource));
+        Mockito.when(mockSource.get()).thenReturn(firstAnswer, secondAnswer);
+        var konfi = Konfi
+                .builder(StringProperties.class)
+                .repositories(List.of(repository))
+                .build();
+
+        Assertions.assertEquals("a", konfi.value());
+        Konfi.refreshAll(konfi);
+        Assertions.assertEquals("b", konfi.value());
     }
 
     @SafeVarargs
