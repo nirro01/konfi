@@ -4,6 +4,9 @@ import com.nirro.konfi.exception.SourceAccessException;
 
 import java.util.Properties;
 
+/**
+ * System properties source
+ */
 public class SystemPropertiesSource implements Source {
 
     @Override

@@ -4,6 +4,9 @@ import com.nirro.konfi.exception.SourceAccessException;
 
 import java.util.Properties;
 
+/**
+ * Properties source
+ */
 public interface Source {
 
     /**

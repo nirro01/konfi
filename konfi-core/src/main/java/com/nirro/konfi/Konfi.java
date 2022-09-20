@@ -18,39 +18,82 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
+/**
+ * Entry point for the library
+ */
 public final class Konfi {
 
     private Konfi() {
     }
 
-    public static void refreshAll(Object proxy) {
-        InvocationHandler invocationHandler = Proxy.getInvocationHandler(proxy);
-        if(invocationHandler instanceof KonfiHandler konfiHandler) {
-            konfiHandler.refreshAll();
-        }
-    }
-
+    /**
+     * creates a step builder for the properties instance
+     *
+     * @param type interface with methods annotated using {@code KonfiAnnotation}
+     * @param <T> class type
+     * @return RepositoriesStep
+     * @see Builder
+     * @see RepositoriesStep
+     * @see OptionsStep
+     * @see Builder#build()
+     */
     public static <T> RepositoriesStep<T> builder(Class<T> type) {
         return new Builder<>(type);
     }
 
+    /**
+     * Repositories Step
+     * @param <T> class type
+     */
     public interface RepositoriesStep<T> {
+
+        /**
+         *
+         * @param repositories list of repositories order by lookup order
+         * @return OptionsStep
+         */
         OptionsStep<T> repositories(List<Repository> repositories);
     }
 
+    /**
+     * Options Step
+     * include all optional steps and the final build method
+     * @param <T> class type
+     */
     public interface OptionsStep<T> {
-        OptionsStep<T> collectionSeparator(String collectionSeparator);
+
+        /**
+         * regex to be used for splitting a list or set values
+         * @param regex – the delimiting regular expression
+         * @return OptionsStep
+         * @see String#split(String)
+         */
+        OptionsStep<T> collectionSeparator(String regex);
+
+        /**
+         * @param preProcessors preProcessors to be applied on each value
+         * @return OptionsStep
+         */
         OptionsStep<T> preProcessors(List<UnaryOperator<String>> preProcessors);
+
+        /**
+         * @return a new instance built from the current state of this builder
+         */
         T build();
     }
 
+    /**
+     * A step builder of konfi properties instance
+     * builders are created by invoking {@link Konfi#builder(Class)}
+     * @param <T> class type
+     */
     public static class Builder<T> implements RepositoriesStep<T>, OptionsStep<T> {
         private final Class<T> target;
         private List<Repository> repositories;
         private String collectionSeparator = ",";
         private List<UnaryOperator<String>> preProcessors = List.of();
 
-        public Builder(Class<T> target) {
+        private Builder(Class<T> target) {
             this.target = target;
         }
 
@@ -60,23 +103,26 @@ public final class Konfi {
             return this;
         }
 
+        @Override
         public OptionsStep<T> collectionSeparator(String collectionSeparator) {
             this.collectionSeparator = collectionSeparator;
             return this;
         }
 
+        @Override
         public OptionsStep<T> preProcessors(List<UnaryOperator<String>> preProcessors) {
             this.preProcessors = preProcessors;
             return this;
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public T build() {
             var propertyConverter = new PropertyConverterImpl(collectionSeparator);
             var metadataMap = getMethodMetadataMap(target);
             repositories.parallelStream().forEach(Repository::refresh);
             var handler = new KonfiHandler(propertyConverter, metadataMap, repositories, preProcessors);
-            return (T) Proxy.newProxyInstance(target.getClassLoader(), new Class<?>[] {target}, handler);
+            return (T) Proxy.newProxyInstance(target.getClassLoader(), new Class<?>[]{target}, handler);
         }
 
         private Map<Method, MethodMetadata> getMethodMetadataMap(Class<?> targetType) {
@@ -89,7 +135,7 @@ public final class Konfi {
 
         private Optional<MethodMetadata> getMethodMetadata(Class<?> targetType, Method method) {
             final KonfiProperty konfiProperty = method.getAnnotation(KonfiProperty.class);
-            if(konfiProperty != null) {
+            if (konfiProperty != null) {
                 var key = konfiProperty.key();
                 var description = konfiProperty.description();
                 var deprecated = konfiProperty.deprecated();
@@ -101,14 +147,16 @@ public final class Konfi {
             return Optional.empty();
         }
 
-/*        public static String document(Object proxy) {
-            InvocationHandler innerProxy = Proxy.getInvocationHandler(proxy);
-            if (innerProxy instanceof KonfiHandler handler) {
-                return handler.document();
-            } else {
-                throw new IllegalArgumentException("proxy is not a proxy instance of KonfiHandler");
-            }
+    }
 
-        }*/
+    /**
+     * convenient method for refreshing all repositories associated with the instance
+     * @param proxy instance to refresh
+     */
+    public static void refreshAll(Object proxy) {
+        InvocationHandler invocationHandler = Proxy.getInvocationHandler(proxy);
+        if (invocationHandler instanceof KonfiHandler konfiHandler) {
+            konfiHandler.refreshAll();
+        }
     }
 }
