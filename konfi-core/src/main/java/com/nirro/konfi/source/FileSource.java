@@ -6,10 +6,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * File properties source
+ */
 public class FileSource implements Source {
 
     private final String path;
 
+    /**
+     * Construct a new FileSource
+     * @param path file path
+     */
     public FileSource(String path) {
         this.path = path;
     }

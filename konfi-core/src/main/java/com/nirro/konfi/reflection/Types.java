@@ -7,13 +7,12 @@ import java.util.NoSuchElementException;
 
 /**
  * Static methods for working with types.
+ * copied from <a href="https://github.com/OpenFeign/feign/blob/master/core/src/main/java/feign/Types.java">OpenFeign</a>
  *
  * @author Bob Lee
  * @author Jesse Wilson
  */
 public final class Types {
-
-    private static final Type[] EMPTY_TYPE_ARRAY = new Type[0];
 
     private Types() {
         // No instances.
@@ -133,7 +132,13 @@ public final class Types {
     }
 
 
-
+    /**
+     * resolve type
+     * @param context context
+     * @param contextRawType context taw type
+     * @param toResolve type to resolve
+     * @return resolved type
+     */
     public static Type resolve(Type context, Class<?> contextRawType, Type toResolve) {
         // This implementation is made a little more complicated in an attempt to avoid object-creation.
 
@@ -226,25 +231,6 @@ public final class Types {
         }
     }
 
-    public static Type resolveReturnType(Type baseType, Type overridingType) {
-        if (baseType instanceof Class && overridingType instanceof Class &&
-                ((Class<?>) baseType).isAssignableFrom((Class<?>) overridingType)) {
-            // NOTE: javac generates multiple same methods for multiple inherited generic interfaces
-            return overridingType;
-        }
-        if (baseType instanceof Class && overridingType instanceof ParameterizedType) {
-            // NOTE: javac will generate multiple methods with different return types
-            // base interface declares generic method, override declares parameterized generic method
-            return overridingType;
-        }
-        if (baseType instanceof Class && overridingType instanceof TypeVariable) {
-            // NOTE: javac will generate multiple methods with different return types
-            // base interface declares non generic method, override declares generic method
-            return overridingType;
-        }
-        return baseType;
-    }
-
     static final class ParameterizedTypeImpl implements ParameterizedType {
 
         private final Type ownerType;
@@ -333,75 +319,6 @@ public final class Types {
         @Override
         public String toString() {
             return typeToString(componentType) + "[]";
-        }
-    }
-
-    /**
-     * The WildcardType interface supports multiple upper bounds and multiple lower bounds. We only
-     * support what the Java 6 language needs - at most one bound. If a lower bound is set, the upper
-     * bound must be Object.class.
-     */
-    static final class WildcardTypeImpl implements WildcardType {
-
-        private final Type upperBound;
-        private final Type lowerBound;
-
-        WildcardTypeImpl(Type[] upperBounds, Type[] lowerBounds) {
-            if (lowerBounds.length > 1) {
-                throw new IllegalArgumentException();
-            }
-            if (upperBounds.length != 1) {
-                throw new IllegalArgumentException();
-            }
-
-            if (lowerBounds.length == 1) {
-                if (lowerBounds[0] == null) {
-                    throw new NullPointerException();
-                }
-                checkNotPrimitive(lowerBounds[0]);
-                if (upperBounds[0] != Object.class) {
-                    throw new IllegalArgumentException();
-                }
-                this.lowerBound = lowerBounds[0];
-                this.upperBound = Object.class;
-            } else {
-                if (upperBounds[0] == null) {
-                    throw new NullPointerException();
-                }
-                checkNotPrimitive(upperBounds[0]);
-                this.lowerBound = null;
-                this.upperBound = upperBounds[0];
-            }
-        }
-
-        public Type[] getUpperBounds() {
-            return new Type[] {upperBound};
-        }
-
-        public Type[] getLowerBounds() {
-            return lowerBound != null ? new Type[] {lowerBound} : EMPTY_TYPE_ARRAY;
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return other instanceof WildcardType && Types.equals(this, (WildcardType) other);
-        }
-
-        @Override
-        public int hashCode() {
-            // This equals Arrays.hashCode(getLowerBounds()) ^ Arrays.hashCode(getUpperBounds()).
-            return (lowerBound != null ? 31 + lowerBound.hashCode() : 1) ^ (31 + upperBound.hashCode());
-        }
-
-        @Override
-        public String toString() {
-            if (lowerBound != null) {
-                return "? super " + typeToString(lowerBound);
-            }
-            if (upperBound == Object.class) {
-                return "?";
-            }
-            return "? extends " + typeToString(upperBound);
         }
     }
 }

@@ -6,10 +6,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Resources properties source
+ */
 public class ResourcesSource implements Source {
 
     private final String path;
 
+    /**
+     * Construct a new ResourcesSource
+     * @param path path file path
+     */
     public ResourcesSource(String path) {
         this.path = path;
     }

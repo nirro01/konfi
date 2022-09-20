@@ -1,9 +1,11 @@
 package com.nirro.konfi.repository;
 
+/**
+ * Repository manage the access to the property source
+ */
 public interface Repository {
     /**
      * refresh the repository.
-     * must be called before first usage
      */
     void refresh();
 

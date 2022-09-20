@@ -9,6 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 
+/**
+ * An {@link InvocationHandler} that forwards methods annotated with
+ * {@link com.nirro.konfi.annotation.KonfiProperty} to the type safe
+ * representation of the value found the using the property key
+ * in the lookup repositories
+ */
 public class KonfiHandler implements InvocationHandler {
 
     private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
@@ -24,6 +30,14 @@ public class KonfiHandler implements InvocationHandler {
     private final List<Repository> repositories;
     private final UnaryOperator<String> preProcessor;
 
+    /**
+     * constructs a new KonfiHandler
+     *
+     * @param propertyConverter propertyConverter
+     * @param methodMetadataMap methodMetadataMap
+     * @param repositories      repositories
+     * @param preProcessors     preProcessors
+     */
     public KonfiHandler(PropertyConverter propertyConverter,
                         Map<Method, MethodMetadata> methodMetadataMap,
                         List<Repository> repositories,
@@ -46,28 +60,30 @@ public class KonfiHandler implements InvocationHandler {
             default:
                 MethodMetadata methodMetadata = methodMetadataMap.get(method);
                 String value = getValue(methodMetadata.key());
-                if(value != null) {
+                if (value != null) {
                     value = preProcessor.apply(value);
                 }
                 return invoke(value, methodMetadata.returnType());
         }
     }
 
+    /**
+     * refresh all repositories
+     */
     public void refreshAll() {
-         repositories.forEach(Repository::refresh);
+        repositories.forEach(Repository::refresh);
     }
 
     /**
-     *
      * @param key property key
      * @return the first value associated with the key found in the repositories,
-     *         null if no values were found
+     * null if no values were found
      */
     private String getValue(String key) {
         String value;
         for (var repository : repositories) {
             value = repository.getProperty(key);
-            if(value != null) {
+            if (value != null) {
                 return value;
             }
         }
@@ -78,8 +94,7 @@ public class KonfiHandler implements InvocationHandler {
         if (type instanceof ParameterizedType parameterizedType) {
             //Type is optional, List or Set
             return handleFirstLevelParameterizedType(value, (ParameterizedType) type, parameterizedType);
-        }
-        else if (type instanceof Class<?>) {
+        } else if (type instanceof Class<?>) {
             // Type is String, Long, Boolean etc
             return propertyConverter.convert(value, type, false);
         } else {
@@ -111,10 +126,12 @@ public class KonfiHandler implements InvocationHandler {
     }
 
     private Object handleSecondLevelParameterizedType(String value, ParameterizedType nestedParameterizedType) {
-        var rawTypeName =  nestedParameterizedType.getRawType().getTypeName();
+        var rawTypeName = nestedParameterizedType.getRawType().getTypeName();
         return switch (rawTypeName) {
-            case JAVA_UTIL_LIST -> propertyConverter.convertList(value, nestedParameterizedType.getActualTypeArguments()[0], true);
-            case JAVA_UTIL_SET -> propertyConverter.convertSet(value, nestedParameterizedType.getActualTypeArguments()[0], true);
+            case JAVA_UTIL_LIST ->
+                    propertyConverter.convertList(value, nestedParameterizedType.getActualTypeArguments()[0], true);
+            case JAVA_UTIL_SET ->
+                    propertyConverter.convertSet(value, nestedParameterizedType.getActualTypeArguments()[0], true);
             default -> throw new InvalidReturnTypeException();
         };
     }
@@ -134,47 +151,4 @@ public class KonfiHandler implements InvocationHandler {
                 (a, b) -> a.andThen(b)::apply
         );
     }
-
-   /*
-   public String document() {
-        StringBuilder sb = new StringBuilder();
-        sb
-                .append("Documentation for MyProperties:")
-                .append(System.lineSeparator())
-                .append("Repositories:")
-                .append(System.lineSeparator());
-        IntStream.range(0, repositories.size())
-                .forEach(index -> sb.append(index).append(". ").append(repositories.get(index)).append(System.lineSeparator()));
-        return sb.toString();
-    }
-
-
-    private static String formatAsTable(List<List<String>> rows)
-    {
-        int[] maxLengths = new int[rows.get(0).size()];
-        for (List<String> row : rows)
-        {
-            for (int i = 0; i < row.size(); i++)
-            {
-                if(row.get(i) != null) {
-                    maxLengths[i] = Math.max(maxLengths[i], row.get(i).length());
-                }
-            }
-        }
-
-        StringBuilder formatBuilder = new StringBuilder();
-        for (int maxLength : maxLengths)
-        {
-            formatBuilder.append("%-").append(maxLength + 8).append("s");
-        }
-        String format = formatBuilder.toString();
-
-        StringBuilder result = new StringBuilder();
-        for (List<String> row : rows)
-        {
-            result.append(String.format(format, row.toArray(new String[0]))).append("\n");
-        }
-        return result.toString();
-    }
-    */
 }

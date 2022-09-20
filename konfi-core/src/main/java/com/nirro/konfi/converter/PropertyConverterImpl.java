@@ -10,13 +10,23 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * A converter which can convert an <code>String</code> representation
+ * value into one of the following types:
+ * {@link String} {@link Long} {@link Integer}
+ * {@link Boolean} {@link Double} {@link Float}
+ */
 public class PropertyConverterImpl implements PropertyConverter {
 
     private static final HashMap<Type, Function<String, ?>> propertyConverters;
-    private final String collectionSeparator;
+    private final String regex;
 
-    public PropertyConverterImpl(String collectionSeparator) {
-        this.collectionSeparator = collectionSeparator;
+    /**
+     * Construct a new PropertyConverterImpl
+     * @param regex – the delimiting regular expression for collections
+     */
+    public PropertyConverterImpl(String regex) {
+        this.regex = regex;
     }
 
     static {
@@ -59,12 +69,12 @@ public class PropertyConverterImpl implements PropertyConverter {
     private Object doConvertSet(String value, Function<String, ?> converter) {
         Objects.requireNonNull(value);
         Objects.requireNonNull(converter);
-        return Arrays.stream(value.split(collectionSeparator)).map(converter).collect(Collectors.toSet());
+        return Arrays.stream(value.split(regex)).map(converter).collect(Collectors.toSet());
     }
     private Object doConvertList(String value, Function<String, ?> converter) {
         Objects.requireNonNull(value);
         Objects.requireNonNull(converter);
-        return Arrays.stream(value.split(collectionSeparator)).map(converter).toList();
+        return Arrays.stream(value.split(regex)).map(converter).toList();
     }
 
     private Object doGenericConvert(String value, Type type, boolean optional, BiFunction<String, Function<String, ?>, Object> func) {

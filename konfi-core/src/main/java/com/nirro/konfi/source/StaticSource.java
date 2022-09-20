@@ -6,8 +6,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Represent a source that can't be changed at runtime.
- *
+ * Source that can't be changed at runtime.
  * the return value of the delegated source get() method is cached and reused
  */
 public class StaticSource implements Source {
@@ -15,6 +14,10 @@ public class StaticSource implements Source {
     private final Source delegate;
     private final AtomicReference<Properties> value;
 
+    /**
+     * Construct a new Static Source
+     * @param delegate source
+     */
     public StaticSource(Source delegate) {
         this.delegate = delegate;
         value = new AtomicReference<>();
