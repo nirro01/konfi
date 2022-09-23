@@ -7,7 +7,14 @@ import java.util.Properties;
 /**
  * System properties source
  */
-public class SystemPropertiesSource implements Source {
+public class SystemProperties implements PropertiesSource {
+
+    /**
+     * Creates a new SystemPropertiesSupplier
+     */
+    public SystemProperties() {
+        // Do nothing
+    }
 
     @Override
     public Properties get() throws SourceAccessException {

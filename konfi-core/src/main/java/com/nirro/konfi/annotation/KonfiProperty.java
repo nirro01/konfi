@@ -14,21 +14,25 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface KonfiProperty {
     /**
+     * key
      * @return property key
      */
     String key();
 
     /**
+     * description
      * @return property description
      */
     String description() default "";
 
     /**
+     * deprecated
      * @return is deprecated
      */
     boolean deprecated() default false;
 
     /**
+     * since
      * @return application version that introduced the property
      */
     String since() default "0.0.1";

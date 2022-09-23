@@ -3,11 +3,9 @@ package com.nirro.konfi;
 import com.nirro.konfi.exception.InvalidReturnTypeException;
 import com.nirro.konfi.exception.InvalidValueException;
 import com.nirro.konfi.exception.MissingValueException;
-import com.nirro.konfi.repository.Repositories;
-import com.nirro.konfi.repository.Repository;
 import com.nirro.konfi.samples.*;
-import com.nirro.konfi.source.EnvironmentVariablesSource;
-import com.nirro.konfi.source.Sources;
+import com.nirro.konfi.source.EnvironmentVariables;
+import com.nirro.konfi.source.PropertiesSources;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -28,13 +26,14 @@ class KonfiTest {
     void StringTest() {
         var konfi = Konfi
                 .builder(StringProperties.class)
-                .repositories(singleMapSourceFixedRepository(
-                        Map.entry(VALUE, "a"),
-                        Map.entry(OPTIONAL_VALUE, "a"),
-                        Map.entry(LIST_OF_VALUES, "a,b"),
-                        Map.entry(OPTIONAL_LIST_OF_VALUES, "a,b"),
-                        Map.entry(SET_OF_VALUES, "a,b"),
-                        Map.entry(OPTIONAL_SET_OF_VALUES, "a,b")))
+                .sources(List.of(PropertiesSources.newMapSource(
+                        Map.ofEntries(
+                                Map.entry(VALUE, "a"),
+                                Map.entry(OPTIONAL_VALUE, "a"),
+                                Map.entry(LIST_OF_VALUES, "a,b"),
+                                Map.entry(OPTIONAL_LIST_OF_VALUES, "a,b"),
+                                Map.entry(SET_OF_VALUES, "a,b"),
+                                Map.entry(OPTIONAL_SET_OF_VALUES, "a,b")))))
                 .build();
 
         Assertions.assertEquals("a", konfi.value());
@@ -56,14 +55,16 @@ class KonfiTest {
     void IntegerTest() {
         var konfi = Konfi
                 .builder(IntegerProperties.class)
-                .repositories(singleMapSourceFixedRepository(
-                        Map.entry(VALUE, "1"),
-                        Map.entry(INVALID_VALUE, "a"),
-                        Map.entry(OPTIONAL_VALUE, "1"),
-                        Map.entry(LIST_OF_VALUES, "1,2"),
-                        Map.entry(OPTIONAL_LIST_OF_VALUES, "1,2"),
-                        Map.entry(SET_OF_VALUES, "1,2"),
-                        Map.entry(OPTIONAL_SET_OF_VALUES, "1,2")))
+                .sources(Collections.singletonList(
+                        PropertiesSources.newMapSource(
+                                Map.ofEntries(
+                                        Map.entry(VALUE, "1"),
+                                        Map.entry(INVALID_VALUE, "a"),
+                                        Map.entry(OPTIONAL_VALUE, "1"),
+                                        Map.entry(LIST_OF_VALUES, "1,2"),
+                                        Map.entry(OPTIONAL_LIST_OF_VALUES, "1,2"),
+                                        Map.entry(SET_OF_VALUES, "1,2"),
+                                        Map.entry(OPTIONAL_SET_OF_VALUES, "1,2")))))
                 .build();
 
         Assertions.assertEquals(1, konfi.value());
@@ -86,14 +87,15 @@ class KonfiTest {
     void LongTest() {
         var konfi = Konfi
                 .builder(LongProperties.class)
-                .repositories(singleMapSourceFixedRepository(
-                        Map.entry(VALUE, "1"),
-                        Map.entry(INVALID_VALUE, "a"),
-                        Map.entry(OPTIONAL_VALUE, "1"),
-                        Map.entry(LIST_OF_VALUES, "1,2"),
-                        Map.entry(OPTIONAL_LIST_OF_VALUES, "1,2"),
-                        Map.entry(SET_OF_VALUES, "1,2"),
-                        Map.entry(OPTIONAL_SET_OF_VALUES, "1,2")))
+                .sources(Collections.singletonList(
+                        PropertiesSources.newMapSource(Map.ofEntries(
+                                Map.entry(VALUE, "1"),
+                                Map.entry(INVALID_VALUE, "a"),
+                                Map.entry(OPTIONAL_VALUE, "1"),
+                                Map.entry(LIST_OF_VALUES, "1,2"),
+                                Map.entry(OPTIONAL_LIST_OF_VALUES, "1,2"),
+                                Map.entry(SET_OF_VALUES, "1,2"),
+                                Map.entry(OPTIONAL_SET_OF_VALUES, "1,2")))))
                 .build();
 
         Assertions.assertEquals(1L, konfi.value());
@@ -116,14 +118,15 @@ class KonfiTest {
     void DoubleTest() {
         var konfi = Konfi
                 .builder(DoubleProperties.class)
-                .repositories(singleMapSourceFixedRepository(
-                        Map.entry(VALUE, "1"),
-                        Map.entry(INVALID_VALUE, "a"),
-                        Map.entry(OPTIONAL_VALUE, "1"),
-                        Map.entry(LIST_OF_VALUES, "1,2"),
-                        Map.entry(OPTIONAL_LIST_OF_VALUES, "1,2"),
-                        Map.entry(SET_OF_VALUES, "1,2"),
-                        Map.entry(OPTIONAL_SET_OF_VALUES, "1,2")))
+                .sources(Collections.singletonList(
+                        PropertiesSources.newMapSource(Map.ofEntries(
+                                Map.entry(VALUE, "1"),
+                                Map.entry(INVALID_VALUE, "a"),
+                                Map.entry(OPTIONAL_VALUE, "1"),
+                                Map.entry(LIST_OF_VALUES, "1,2"),
+                                Map.entry(OPTIONAL_LIST_OF_VALUES, "1,2"),
+                                Map.entry(SET_OF_VALUES, "1,2"),
+                                Map.entry(OPTIONAL_SET_OF_VALUES, "1,2")))))
                 .build();
 
         Assertions.assertEquals(1D, konfi.value());
@@ -146,14 +149,15 @@ class KonfiTest {
     void FloatTest() {
         var konfi = Konfi
                 .builder(FloatProperties.class)
-                .repositories(singleMapSourceFixedRepository(
-                        Map.entry(VALUE, "1"),
-                        Map.entry(INVALID_VALUE, "a"),
-                        Map.entry(OPTIONAL_VALUE, "1"),
-                        Map.entry(LIST_OF_VALUES, "1,2"),
-                        Map.entry(OPTIONAL_LIST_OF_VALUES, "1,2"),
-                        Map.entry(SET_OF_VALUES, "1,2"),
-                        Map.entry(OPTIONAL_SET_OF_VALUES, "1,2")))
+                .sources(Collections.singletonList(
+                        PropertiesSources.newMapSource(Map.ofEntries(
+                                Map.entry(VALUE, "1"),
+                                Map.entry(INVALID_VALUE, "a"),
+                                Map.entry(OPTIONAL_VALUE, "1"),
+                                Map.entry(LIST_OF_VALUES, "1,2"),
+                                Map.entry(OPTIONAL_LIST_OF_VALUES, "1,2"),
+                                Map.entry(SET_OF_VALUES, "1,2"),
+                                Map.entry(OPTIONAL_SET_OF_VALUES, "1,2")))))
                 .build();
 
         Assertions.assertEquals(1F, konfi.value());
@@ -176,13 +180,14 @@ class KonfiTest {
     void BooleanTest() {
         var konfi = Konfi
                 .builder(BooleanProperties.class)
-                .repositories(singleMapSourceFixedRepository(
-                        Map.entry(VALUE, "true"),
-                        Map.entry(OPTIONAL_VALUE, "true"),
-                        Map.entry(LIST_OF_VALUES, "true,false"),
-                        Map.entry(OPTIONAL_LIST_OF_VALUES, "true,false"),
-                        Map.entry(SET_OF_VALUES, "true,false"),
-                        Map.entry(OPTIONAL_SET_OF_VALUES, "true,false")))
+                .sources(Collections.singletonList(
+                        PropertiesSources.newMapSource(Map.ofEntries(
+                                Map.entry(VALUE, "true"),
+                                Map.entry(OPTIONAL_VALUE, "true"),
+                                Map.entry(LIST_OF_VALUES, "true,false"),
+                                Map.entry(OPTIONAL_LIST_OF_VALUES, "true,false"),
+                                Map.entry(SET_OF_VALUES, "true,false"),
+                                Map.entry(OPTIONAL_SET_OF_VALUES, "true,false")))))
                 .build();
 
         Assertions.assertEquals(true, konfi.value());
@@ -204,14 +209,11 @@ class KonfiTest {
     void MultipleRepositoriesTest() {
         var konfi = Konfi
                 .builder(StringProperties.class)
-                .repositories(List.of(
-                        mapSourceFixedRepository(
-                                Map.entry(VALUE, "a")),
-                        mapSourceFixedRepository(
-                                Map.entry(VALUE, "b"),
-                                Map.entry(LIST_OF_VALUES, "a,b")),
-                        mapSourceFixedRepository(
-                                Map.entry(SET_OF_VALUES, "c,d"))))
+                .sources(List.of(
+                        PropertiesSources.newMapSource(Map.of(VALUE, "a")),
+                        PropertiesSources.newMapSource(Map.of(VALUE, "b")),
+                        PropertiesSources.newMapSource(Map.of(LIST_OF_VALUES, "a,b")),
+                        PropertiesSources.newMapSource(Map.of(SET_OF_VALUES, "c,d"))))
                 .build();
         System.out.println(konfi);
         Assertions.assertEquals("a", konfi.value());
@@ -223,13 +225,14 @@ class KonfiTest {
     void InvalidReturnTypeTest() {
         var konfi = Konfi
                 .builder(InvalidReturnTypeProperties.class)
-                .repositories(singleMapSourceFixedRepository(
-                        Map.entry(VALUE, "true"),
-                        Map.entry(OPTIONAL_VALUE, "true"),
-                        Map.entry(LIST_OF_VALUES, "true,false"),
-                        Map.entry(OPTIONAL_LIST_OF_VALUES, "true,false"),
-                        Map.entry(SET_OF_VALUES, "true,false"),
-                        Map.entry(OPTIONAL_SET_OF_VALUES, "true,false")))
+                .sources(Collections.singletonList(
+                        PropertiesSources.newMapSource(Map.ofEntries(
+                                Map.entry(VALUE, "true"),
+                                Map.entry(OPTIONAL_VALUE, "true"),
+                                Map.entry(LIST_OF_VALUES, "true,false"),
+                                Map.entry(OPTIONAL_LIST_OF_VALUES, "true,false"),
+                                Map.entry(SET_OF_VALUES, "true,false"),
+                                Map.entry(OPTIONAL_SET_OF_VALUES, "true,false")))))
                 .build();
 
         Assertions.assertThrows(InvalidReturnTypeException.class, konfi::pojo);
@@ -257,13 +260,14 @@ class KonfiTest {
     void AdvancedUsageTest() {
         var konfi = Konfi
                 .builder(StringProperties.class)
-                .repositories(singleMapSourceFixedRepository(
-                        Map.entry(VALUE, "a  "),
-                        Map.entry(OPTIONAL_VALUE, "a "),
-                        Map.entry(LIST_OF_VALUES, "  a b  "),
-                        Map.entry(OPTIONAL_LIST_OF_VALUES, "   a b "),
-                        Map.entry(SET_OF_VALUES, " a b    "),
-                        Map.entry(OPTIONAL_SET_OF_VALUES, " a b ")))
+                .sources(Collections.singletonList(
+                        PropertiesSources.newMapSource(Map.ofEntries(
+                                Map.entry(VALUE, "a  "),
+                                Map.entry(OPTIONAL_VALUE, "a "),
+                                Map.entry(LIST_OF_VALUES, "  a b  "),
+                                Map.entry(OPTIONAL_LIST_OF_VALUES, "   a b "),
+                                Map.entry(SET_OF_VALUES, " a b    "),
+                                Map.entry(OPTIONAL_SET_OF_VALUES, " a b ")))))
                 .collectionSeparator("\\s")
                 .preProcessors(List.of(String::strip, String::toUpperCase))
                 .build();
@@ -278,49 +282,20 @@ class KonfiTest {
 
     @Test
     void RefreshTest() {
-        var mockSource = Mockito.mock(EnvironmentVariablesSource.class);
+        var mockSource = Mockito.mock(EnvironmentVariables.class);
         var firstAnswer = new Properties();
         firstAnswer.put(VALUE, "a");
         var secondAnswer = new Properties();
         secondAnswer.put(VALUE, "b");
-        var repository = Repositories.newRepository((mockSource));
+
         Mockito.when(mockSource.get()).thenReturn(firstAnswer, secondAnswer);
         var konfi = Konfi
                 .builder(StringProperties.class)
-                .repositories(List.of(repository))
+                .sources(List.of(mockSource))
                 .build();
 
         Assertions.assertEquals("a", konfi.value());
-        repository.refresh();
+        Konfi.refresh(konfi);
         Assertions.assertEquals("b", konfi.value());
-    }
-
-    @Test
-    void RefreshAllTest() {
-        var mockSource = Mockito.mock(EnvironmentVariablesSource.class);
-        var firstAnswer = new Properties();
-        firstAnswer.put(VALUE, "a");
-        var secondAnswer = new Properties();
-        secondAnswer.put(VALUE, "b");
-        var repository = Repositories.newRepository((mockSource));
-        Mockito.when(mockSource.get()).thenReturn(firstAnswer, secondAnswer);
-        var konfi = Konfi
-                .builder(StringProperties.class)
-                .repositories(List.of(repository))
-                .build();
-
-        Assertions.assertEquals("a", konfi.value());
-        Konfi.refreshAll(konfi);
-        Assertions.assertEquals("b", konfi.value());
-    }
-
-    @SafeVarargs
-    final List<Repository> singleMapSourceFixedRepository(Map.Entry<String, String>... entries) {
-        return List.of(mapSourceFixedRepository(entries));
-    }
-
-    @SafeVarargs
-    final Repository mapSourceFixedRepository(Map.Entry<String, String>... entries) {
-        return Repositories.newRepository(Sources.newMapSource(Map.ofEntries(entries)));
     }
 }

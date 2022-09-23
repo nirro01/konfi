@@ -109,6 +109,7 @@
                     <configuration>
                         <excludes>
                             <exclude>com/nirro/konfi/reflection/*</exclude>
+                            <exclude>com/nirro/konfi/exception/*</exclude>
                         </excludes>
                     </configuration>
                     <executions>

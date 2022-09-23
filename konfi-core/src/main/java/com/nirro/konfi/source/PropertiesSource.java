@@ -7,9 +7,10 @@ import java.util.Properties;
 /**
  * Properties source
  */
-public interface Source {
+public interface PropertiesSource {
 
     /**
+     * get the properties from the source
      *
      * @return Properties
      * @throws SourceAccessException when unable to get the properties from the source

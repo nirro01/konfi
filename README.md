@@ -35,26 +35,22 @@ public interface AmusementParkProperties {
 ```
 2. Define your properties sources
 ``` java
-  var environmentVariablesRepo = Repositories.newRepository(Sources.newEnvironmentVariablesSource());
-  var systemPropertiesRepo = Repositories.newRepository(Sources.newEnvironmentVariablesSource());
-  var defaultProperties = Repositories.newRepository(Sources.newResourcesSource("app.properties"));
-  var repos = List.of(environmentVariablesRepo, systemPropertiesRepo, defaultProperties)
+  var environmentVariablesSource = PropertiesSources.newEnvironmentVariablesSource();
+  var systemPropertiesSource = PropertiesSources.newSystemPropertiesSource();
+  var externalFileSource = PropertiesSources.newExternalFileSource("app.properties");
+  var internalFileSource = PropertiesSources.newInternalFileSource("app.properties");
+  var sources = List.of(environmentVariablesSource, systemPropertiesSource, externalFileSource, internalFileSource)
 ```
 3. Build instance of your interface
 ``` java
   AmusementParkProperties amusementParkProperties = Konfi
           .builder(AmusementParkProperties.class)
-          .repositories(repos)
+          .sources(sources)
           .build();
   String name = amusementParkProperties.name();
   System.out.println(name);
 ```
-4. Refresh a single repository
-``` java
-  environmentVariablesRepo.refresh();
-  System.out.println(amusementParkProperties.name());
-```
-5. Refresh all the repositories
+5. Refresh properties
 ``` java
   Konfi.refreshAll(amusementParkProperties);
   System.out.println(amusementParkProperties.name());

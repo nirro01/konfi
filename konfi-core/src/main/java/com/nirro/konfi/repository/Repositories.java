@@ -1,6 +1,6 @@
 package com.nirro.konfi.repository;
 
-import com.nirro.konfi.source.Source;
+import com.nirro.konfi.source.PropertiesSource;
 
 /**
  * Factory methods for repositories
@@ -11,11 +11,12 @@ public class Repositories {
     }
 
     /**
-     * @param source property source
+     * create a new repository
+     * @param propertiesSource property source
      * @return new Repository
      */
-    public static Repository newRepository(Source source) {
-        return new RepositoryImpl(source);
+    public static Repository newRepository(PropertiesSource propertiesSource) {
+        return new RepositoryImpl(propertiesSource);
     }
 
 }

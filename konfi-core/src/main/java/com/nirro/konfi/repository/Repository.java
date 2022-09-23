@@ -10,6 +10,7 @@ public interface Repository {
     void refresh();
 
     /**
+     * get property
      *
      * @param key property key
      * @return value associated with the key if exists, null otherwise

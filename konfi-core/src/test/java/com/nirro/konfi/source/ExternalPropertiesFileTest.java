@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-class FileSourceTest {
+class ExternalPropertiesFileTest {
 
     @Test
     void read() throws IOException {
@@ -18,7 +18,7 @@ class FileSourceTest {
         myWriter.write("value=a");
         myWriter.close();
 
-        var fileSource = Sources.newFileSource(file.getAbsolutePath());
+        var fileSource = PropertiesSources.newExternalFileSource(file.getAbsolutePath());
         var properties = fileSource.get();
         Assertions.assertEquals("a", properties.getProperty("value"));
         Assertions.assertNull(properties.getProperty("missing"));
@@ -26,7 +26,7 @@ class FileSourceTest {
 
     @Test
     void readMissingResource() {
-        var fileSource = Sources.newFileSource("missing.properties");
+        var fileSource = PropertiesSources.newExternalFileSource("missing.properties");
         Assertions.assertThrows(SourceAccessException.class, fileSource::get);
     }
 }

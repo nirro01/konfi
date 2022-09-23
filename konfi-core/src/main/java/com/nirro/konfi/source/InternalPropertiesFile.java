@@ -9,26 +9,26 @@ import java.util.Properties;
 /**
  * Resources properties source
  */
-public class ResourcesSource implements Source {
+public class InternalPropertiesFile implements PropertiesSource {
 
-    private final String path;
+    private final String name;
 
     /**
-     * Construct a new ResourcesSource
-     * @param path path file path
+     * Construct a new ResourcesPropertiesSupplier
+     * @param name The resource name
      */
-    public ResourcesSource(String path) {
-        this.path = path;
+    public InternalPropertiesFile(String name) {
+        this.name = name;
     }
 
     @Override
     public Properties get() throws SourceAccessException {
         Properties properties = new Properties();
-        try (var inputStream = getFileFromResourceAsStream(path)) {
+        try (var inputStream = getFileFromResourceAsStream(name)) {
             properties.load(inputStream);
             return properties;
         } catch (IOException e) {
-            throw new SourceAccessException("Failed to read resource " + path ,e);
+            throw new SourceAccessException("Failed to read resource " + name ,e);
         }
     }
 

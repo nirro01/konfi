@@ -1,14 +1,14 @@
 package com.nirro.konfi.source;
 
 /**
- * Environment variables properties source
+ * Environment variables properties supplier
  */
-public class EnvironmentVariablesSource extends MapSource {
+public class EnvironmentVariables extends PropertiesMap {
 
     /**
      * construct a new EnvironmentVariablesSource
      */
-    public EnvironmentVariablesSource() {
+    public EnvironmentVariables() {
         super(System.getenv());
     }
 }

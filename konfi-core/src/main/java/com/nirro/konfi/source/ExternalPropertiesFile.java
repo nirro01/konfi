@@ -9,7 +9,7 @@ import java.util.Properties;
 /**
  * File properties source
  */
-public class FileSource implements Source {
+public class ExternalPropertiesFile implements PropertiesSource {
 
     private final String path;
 
@@ -17,7 +17,7 @@ public class FileSource implements Source {
      * Construct a new FileSource
      * @param path file path
      */
-    public FileSource(String path) {
+    public ExternalPropertiesFile(String path) {
         this.path = path;
     }
 

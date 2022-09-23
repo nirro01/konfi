@@ -5,7 +5,9 @@ import com.nirro.konfi.converter.PropertyConverterImpl;
 import com.nirro.konfi.invocationhandler.KonfiHandler;
 import com.nirro.konfi.invocationhandler.MethodMetadata;
 import com.nirro.konfi.reflection.Types;
+import com.nirro.konfi.repository.Repositories;
 import com.nirro.konfi.repository.Repository;
+import com.nirro.konfi.source.PropertiesSource;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -33,26 +35,27 @@ public final class Konfi {
      * @param <T> class type
      * @return RepositoriesStep
      * @see Builder
-     * @see RepositoriesStep
+     * @see PropertySourcesStep
      * @see OptionsStep
      * @see Builder#build()
      */
-    public static <T> RepositoriesStep<T> builder(Class<T> type) {
+    public static <T> PropertySourcesStep<T> builder(Class<T> type) {
         return new Builder<>(type);
     }
 
     /**
-     * Repositories Step
+     * Property sources Step
      * @param <T> class type
      */
-    public interface RepositoriesStep<T> {
+    public interface PropertySourcesStep<T> {
 
         /**
+         * Property Sources for properties lookup
          *
-         * @param repositories list of repositories order by lookup order
+         * @param propertiesSources list of property sources for properties lookup ordered by priority
          * @return OptionsStep
          */
-        OptionsStep<T> repositories(List<Repository> repositories);
+        OptionsStep<T> sources(List<PropertiesSource> propertiesSources);
     }
 
     /**
@@ -71,12 +74,15 @@ public final class Konfi {
         OptionsStep<T> collectionSeparator(String regex);
 
         /**
+         * preProcessors to be applied on each value
+         *
          * @param preProcessors preProcessors to be applied on each value
          * @return OptionsStep
          */
         OptionsStep<T> preProcessors(List<UnaryOperator<String>> preProcessors);
 
         /**
+         * build
          * @return a new instance built from the current state of this builder
          */
         T build();
@@ -87,9 +93,9 @@ public final class Konfi {
      * builders are created by invoking {@link Konfi#builder(Class)}
      * @param <T> class type
      */
-    public static class Builder<T> implements RepositoriesStep<T>, OptionsStep<T> {
+    public static class Builder<T> implements PropertySourcesStep<T>, OptionsStep<T> {
         private final Class<T> target;
-        private List<Repository> repositories;
+        private List<PropertiesSource> propertySources;
         private String collectionSeparator = ",";
         private List<UnaryOperator<String>> preProcessors = List.of();
 
@@ -98,8 +104,8 @@ public final class Konfi {
         }
 
         @Override
-        public OptionsStep<T> repositories(List<Repository> repositories) {
-            this.repositories = repositories;
+        public OptionsStep<T> sources(List<PropertiesSource> propertySources) {
+            this.propertySources = propertySources;
             return this;
         }
 
@@ -120,6 +126,7 @@ public final class Konfi {
         public T build() {
             var propertyConverter = new PropertyConverterImpl(collectionSeparator);
             var metadataMap = getMethodMetadataMap(target);
+            var repositories = propertySources.stream().map(Repositories::newRepository).toList();
             repositories.parallelStream().forEach(Repository::refresh);
             var handler = new KonfiHandler(propertyConverter, metadataMap, repositories, preProcessors);
             return (T) Proxy.newProxyInstance(target.getClassLoader(), new Class<?>[]{target}, handler);
@@ -147,13 +154,14 @@ public final class Konfi {
             return Optional.empty();
         }
 
+
     }
 
     /**
      * convenient method for refreshing all repositories associated with the instance
      * @param proxy instance to refresh
      */
-    public static void refreshAll(Object proxy) {
+    public static void refresh(Object proxy) {
         InvocationHandler invocationHandler = Proxy.getInvocationHandler(proxy);
         if (invocationHandler instanceof KonfiHandler konfiHandler) {
             konfiHandler.refreshAll();

@@ -1,6 +1,6 @@
 package com.nirro.konfi.repository;
 
-import com.nirro.konfi.source.Source;
+import com.nirro.konfi.source.PropertiesSource;
 
 import java.util.Properties;
 
@@ -12,19 +12,20 @@ public class RepositoryImpl implements Repository {
 
     private Properties properties;
 
-    private final Source source;
+    private final PropertiesSource propertiesSource;
 
     /**
-     * @param source properties source
+     * Construct a new Repository
+     * @param propertiesSource properties source
      */
-    public RepositoryImpl(Source source) {
-        this.source = source;
+    public RepositoryImpl(PropertiesSource propertiesSource) {
+        this.propertiesSource = propertiesSource;
     }
 
 
     @Override
     public void refresh() {
-        properties = source.get();
+        properties = propertiesSource.get();
     }
 
     @Override

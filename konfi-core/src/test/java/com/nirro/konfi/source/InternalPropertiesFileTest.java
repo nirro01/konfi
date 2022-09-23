@@ -4,11 +4,11 @@ import com.nirro.konfi.exception.SourceAccessException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class ResourcesSourceTest {
+class InternalPropertiesFileTest {
 
     @Test
     void read() {
-        var source = Sources.newResourcesSource("my.properties");
+        var source = PropertiesSources.newInternalFileSource("my.properties");
         var properties = source.get();
         Assertions.assertEquals("a", properties.getProperty("value"));
         Assertions.assertNull(properties.getProperty("missing"));
@@ -16,7 +16,7 @@ class ResourcesSourceTest {
 
     @Test
     void readMissingResource() {
-        var resourcesSource = Sources.newResourcesSource("missing.properties");
+        var resourcesSource = PropertiesSources.newInternalFileSource("missing.properties");
         Assertions.assertThrows(SourceAccessException.class, resourcesSource::get);
     }
 }

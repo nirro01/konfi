@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-class MapSourceTest {
+class PropertiesMapTest {
 
     @Test
     void read() {
-        var source = Sources.newMapSource(Map.of("value", "a"));
+        var source = PropertiesSources.newMapSource(Map.of("value", "a"));
         var properties = source.get();
         Assertions.assertEquals("a", properties.getProperty("value"));
         Assertions.assertNull(properties.getProperty("missing"));

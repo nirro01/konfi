@@ -8,22 +8,22 @@ import java.util.Properties;
 /**
  * Map properties source
  */
-public class MapSource implements Source {
+public class PropertiesMap implements PropertiesSource {
 
-    private final Map<String, String> propertiesMap;
+    private final Map<String, String> map;
 
     /**
      * Construct a new MapSource
-     * @param propertiesMap properties map
+     * @param map properties map
      */
-    public MapSource(Map<String, String> propertiesMap) {
-        this.propertiesMap = propertiesMap;
+    public PropertiesMap(Map<String, String> map) {
+        this.map = map;
     }
 
     @Override
     public Properties get() throws SourceAccessException {
         Properties properties = new Properties();
-        properties.putAll(propertiesMap);
+        properties.putAll(map);
         return properties;
     }
 }
