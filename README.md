@@ -1,5 +1,7 @@
 # Konfi - java properties library
 
+[![codecov](https://codecov.io/github/nirro01/konfi/branch/main/graph/badge.svg?token=0R98PT13JR)](https://codecov.io/github/nirro01/konfi)
+
 ## Main features
 - Clean type safe interface based properties
 - Optional values supported
