@@ -1,5 +1,5 @@
 # Konfi - java properties library
-
+[![build](https://github.com/nirro01/konfi/actions/workflows/push-on-main-branch.yml/badge.svg?branch=main)](https://github.com/nirro01/konfi/actions/workflows/push-on-main-branch.yml)
 [![codecov](https://codecov.io/github/nirro01/konfi/branch/main/graph/badge.svg?token=0R98PT13JR)](https://codecov.io/github/nirro01/konfi)
 
 ## Main features
