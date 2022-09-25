@@ -28,5 +28,5 @@ jobs:
     - name: Update coverage
       uses: codecov/codecov-action@v3
       with:
-        files: ./**/target/site/jacoco/jacoco.xml
+        files: ./konfi-core/target/site/jacoco/jacoco.xml
         name: codecov
