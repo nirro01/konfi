@@ -54,6 +54,6 @@ public interface AmusementParkProperties {
 ```
 5. Refresh properties
 ``` java
-  Konfi.refreshAll(amusementParkProperties);
+  Konfi.refresh(amusementParkProperties);
   System.out.println(amusementParkProperties.name());
 ```
