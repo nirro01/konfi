@@ -2,11 +2,13 @@ package com.nirro.konfi.invocationhandler;
 
 import com.nirro.konfi.converter.PropertyConverter;
 import com.nirro.konfi.exception.InvalidReturnTypeException;
+import com.nirro.konfi.exception.MissingKonfiPropertyAnnotationException;
 import com.nirro.konfi.repository.Repository;
 
 import java.lang.reflect.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.UnaryOperator;
 
 /**
@@ -58,7 +60,8 @@ public class KonfiHandler implements InvocationHandler {
             case TO_STRING_METHOD:
                 return toString();
             default:
-                MethodMetadata methodMetadata = methodMetadataMap.get(method);
+                MethodMetadata methodMetadata = Optional.ofNullable(methodMetadataMap.get(method))
+                        .orElseThrow(MissingKonfiPropertyAnnotationException::new);
                 String value = repository.getProperty(methodMetadata.key());
                 if (value != null) {
                     value = preProcessor.apply(value);

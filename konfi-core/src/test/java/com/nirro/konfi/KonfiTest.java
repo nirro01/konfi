@@ -2,6 +2,7 @@ package com.nirro.konfi;
 
 import com.nirro.konfi.exception.InvalidReturnTypeException;
 import com.nirro.konfi.exception.InvalidValueException;
+import com.nirro.konfi.exception.MissingKonfiPropertyAnnotationException;
 import com.nirro.konfi.exception.MissingValueException;
 import com.nirro.konfi.samples.*;
 import com.nirro.konfi.source.EnvironmentVariables;
@@ -23,7 +24,7 @@ class KonfiTest {
     private static final String OPTIONAL_SET_OF_VALUES = "optionalSetOfValues";
 
     @Test
-    void StringTest() {
+    void stringTest() {
         var konfi = Konfi
                 .builder(StringProperties.class)
                 .sources(List.of(PropertiesSources.newMapSource(
@@ -52,7 +53,7 @@ class KonfiTest {
     }
 
     @Test
-    void IntegerTest() {
+    void integerTest() {
         var konfi = Konfi
                 .builder(IntegerProperties.class)
                 .sources(Collections.singletonList(
@@ -84,7 +85,7 @@ class KonfiTest {
     }
 
     @Test
-    void LongTest() {
+    void longTest() {
         var konfi = Konfi
                 .builder(LongProperties.class)
                 .sources(Collections.singletonList(
@@ -115,7 +116,7 @@ class KonfiTest {
     }
 
     @Test
-    void DoubleTest() {
+    void doubleTest() {
         var konfi = Konfi
                 .builder(DoubleProperties.class)
                 .sources(Collections.singletonList(
@@ -146,7 +147,7 @@ class KonfiTest {
     }
 
     @Test
-    void FloatTest() {
+    void floatTest() {
         var konfi = Konfi
                 .builder(FloatProperties.class)
                 .sources(Collections.singletonList(
@@ -177,7 +178,7 @@ class KonfiTest {
     }
 
     @Test
-    void BooleanTest() {
+    void booleanTest() {
         var konfi = Konfi
                 .builder(BooleanProperties.class)
                 .sources(Collections.singletonList(
@@ -206,7 +207,7 @@ class KonfiTest {
     }
 
     @Test
-    void MultipleRepositoriesTest() {
+    void multipleRepositoriesTest() {
         var konfi = Konfi
                 .builder(StringProperties.class)
                 .sources(List.of(
@@ -222,7 +223,7 @@ class KonfiTest {
     }
 
     @Test
-    void InvalidReturnTypeTest() {
+    void invalidDefinitionsTest() {
         var konfi = Konfi
                 .builder(InvalidReturnTypeProperties.class)
                 .sources(Collections.singletonList(
@@ -252,12 +253,15 @@ class KonfiTest {
         Assertions.assertThrows(InvalidReturnTypeException.class, konfi::primitiveLongArrayValue);
         Assertions.assertThrows(InvalidReturnTypeException.class, konfi::primitiveFloatArrayValue);
         Assertions.assertThrows(InvalidReturnTypeException.class, konfi::optionalOfOptionalString);
-        Assertions.assertThrows(InvalidReturnTypeException.class, konfi::ListOfOptionalString);
-        Assertions.assertThrows(InvalidReturnTypeException.class, konfi::ListOfListOfString);
+        Assertions.assertThrows(InvalidReturnTypeException.class, konfi::listOfOptionalString);
+        Assertions.assertThrows(InvalidReturnTypeException.class, konfi::listOfListOfString);
+        Assertions.assertThrows(InvalidReturnTypeException.class, konfi::sampleInterface);
+        Assertions.assertThrows(InvalidReturnTypeException.class, konfi::sampleGenericInterface);
+        Assertions.assertThrows(MissingKonfiPropertyAnnotationException.class, konfi::unAnnotatedMethod);
     }
 
     @Test
-    void AdvancedUsageTest() {
+    void advancedUsageTest() {
         var konfi = Konfi
                 .builder(StringProperties.class)
                 .sources(Collections.singletonList(
@@ -281,7 +285,7 @@ class KonfiTest {
     }
 
     @Test
-    void RefreshTest() {
+    void refreshTest() {
         var mockSource = Mockito.mock(EnvironmentVariables.class);
         var firstAnswer = new Properties();
         firstAnswer.put(VALUE, "a");

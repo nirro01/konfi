@@ -59,10 +59,18 @@ public interface InvalidReturnTypeProperties {
     @KonfiProperty(key = "optionalOfOptionalString")
     Optional<Optional<String>> optionalOfOptionalString();
 
-    @KonfiProperty(key = "ListOfOptionalString")
-    List<Optional<String>> ListOfOptionalString();
+    @KonfiProperty(key = "listOfOptionalString")
+    List<Optional<String>> listOfOptionalString();
 
-    @KonfiProperty(key = "ListOfListOfString")
-    List<List<String>> ListOfListOfString();
+    @KonfiProperty(key = "listOfListOfString")
+    List<List<String>> listOfListOfString();
+
+    String unAnnotatedMethod();
+
+    @KonfiProperty(key = "sampleInterface")
+    SampleInterface sampleInterface();
+
+    @KonfiProperty(key = "sampleGenericInterface")
+    SampleGenericInterface<String> sampleGenericInterface();
 
 }
