@@ -51,8 +51,8 @@ public interface AmusementParkProperties {
     Optional<String> email();
     
     @KonfiProperty(key = "amusement.park.roller-coaster.minimum-height-cm", description = "Minimum height in centimeters for using the roller coaster")
-    
     Integer rollerCoasterMinimumHeight();
+    
     @KonfiProperty(key = "amusement.park.roller-coaster.active", description = "Roller coaster active")
     Boolean rollerCoasterActive();
 }
