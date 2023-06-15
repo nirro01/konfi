@@ -12,9 +12,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -166,5 +168,18 @@ public final class Konfi {
         if (invocationHandler instanceof KonfiHandler konfiHandler) {
             konfiHandler.refresh();
         }
+    }
+
+    /**
+     * describe the properties associated with the konfi instance
+     * @param proxy instance to get its metadata
+     * @return keys metadata
+     */
+    public static Set<MethodMetadata> describe(Object proxy) {
+        InvocationHandler invocationHandler = Proxy.getInvocationHandler(proxy);
+        if (invocationHandler instanceof KonfiHandler konfiHandler) {
+            return konfiHandler.describe();
+        }
+        return Collections.emptySet();
     }
 }

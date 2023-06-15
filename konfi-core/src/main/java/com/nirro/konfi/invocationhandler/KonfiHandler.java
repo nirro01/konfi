@@ -5,11 +5,17 @@ import com.nirro.konfi.exception.InvalidReturnTypeException;
 import com.nirro.konfi.exception.MissingKonfiPropertyAnnotationException;
 import com.nirro.konfi.repository.Repository;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 /**
  * An {@link InvocationHandler} that forwards methods annotated with
@@ -77,6 +83,13 @@ public class KonfiHandler implements InvocationHandler {
         repository.refresh();
     }
 
+    /**
+     * describe the whole keys
+     * @return keys metadata
+     */
+    public Set<MethodMetadata> describe() {
+        return methodMetadataMap.values().stream().collect(Collectors.toUnmodifiableSet());
+    }
     private Object invoke(String value, Type type) {
         if (type instanceof ParameterizedType parameterizedType) {
             //Type is optional, List or Set

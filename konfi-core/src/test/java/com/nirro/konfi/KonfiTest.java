@@ -4,6 +4,7 @@ import com.nirro.konfi.exception.InvalidReturnTypeException;
 import com.nirro.konfi.exception.InvalidValueException;
 import com.nirro.konfi.exception.MissingKonfiPropertyAnnotationException;
 import com.nirro.konfi.exception.MissingValueException;
+import com.nirro.konfi.invocationhandler.MethodMetadata;
 import com.nirro.konfi.samples.*;
 import com.nirro.konfi.source.EnvironmentVariables;
 import com.nirro.konfi.source.PropertiesSources;
@@ -222,6 +223,33 @@ class KonfiTest {
         Assertions.assertEquals(Set.of("c", "d"), konfi.setOfValues());
     }
 
+    @Test
+    void describeTest() {
+        var konfi = Konfi
+                .builder(StringProperties.class)
+                .sources(List.of(
+                        PropertiesSources.newMapSource(Map.of(VALUE, "a")),
+                        PropertiesSources.newMapSource(Map.of(VALUE, "b")),
+                        PropertiesSources.newMapSource(Map.of(LIST_OF_VALUES, "a,b")),
+                        PropertiesSources.newMapSource(Map.of(SET_OF_VALUES, "c,d"))))
+                .build();
+        Set<MethodMetadata> methodMetadataSet = Konfi.describe(konfi);
+        List<String> keys = methodMetadataSet.stream().map(MethodMetadata::key).toList();
+
+        Assertions.assertTrue(keys.containsAll(
+                List.of("value",
+                        "optionalValue",
+                        "listOfValues",
+                        "optionalListOfValues",
+                        "setOfValues",
+                        "optionalSetOfValues",
+                        "missingValue",
+                        "missingOptionalValue",
+                        "missingListOfValues",
+                        "missingOptionalListOfValues",
+                        "missingSetOfValues",
+                        "missingOptionalSetOfValues")));
+    }
     @Test
     void invalidDefinitionsTest() {
         var konfi = Konfi
